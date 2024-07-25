@@ -1,359 +1,221 @@
 # taha101
-import { useState } from "react";
-import ReactDOM from "react-dom";
-import { BiLogoGithub } from "react-icons/bi";
+<p align="center">
+  <img style="max-width: 100%;" alt="Welcome to Create UI" src="https://raw.githubusercontent.com/vectara/react-search/main/images/projectLogo.png"/>
+</p>
+
+# React-Search
+
+React-Search is a UI widget for adding [Vectara](https://vectara.com/)-powered semantic search to your React apps with a few lines of code.
+
+> [!TIP]
+>
+> Looking for something else? Try another open-source project:
+>
+> - **[React-Chatbot](https://github.com/vectara/react-chatbot)**: Add a compact Vectara-powered chatbot widget chat to your React apps.
+> - **[Create-UI](https://github.com/vectara/create-ui)**: The fastest way to generate a working React codebase for a range of generative and semantic search UIs.
+> - **[Vectara Answer](https://github.com/vectara/vectara-answer)**: Demo app for Summarized Semantic Search with advanced configuration options.
+> - **[Vectara Ingest](https://github.com/vectara/vectara-ingest)**: Sample templates and crawlers for pulling data from many popular data sources.
+
+## Demo
+
+**[Try out the demo!](https://vectara.github.io/react-search/)**
+
+## UI
+
+The search input looks like this:
+
+![React-Search input](https://raw.githubusercontent.com/vectara/react-search/main/images/searchInput.jpg)
+
+When the user clicks the search input, they get a search prompt like this:
+
+![React-Search prompt](https://raw.githubusercontent.com/vectara/react-search/main/images/searchPrompt.jpg)
+
+Search results look like this:
+
+![React-Search results](https://raw.githubusercontent.com/vectara/react-search/main/images/searchResults.jpg)
+
+## Use it in your application
+
+### Use the search component directly
+
+Install React-Search:
+
+```shell
+npm install --save @vectara/react-search
+```
+
+Then use it in your application like this:
+
+```jsx
 import { ReactSearch } from "@vectara/react-search";
-import {
-  VuiAppContent,
-  VuiAppHeader,
-  VuiAppLayout,
-  VuiButtonSecondary,
-  VuiCode,
-  VuiFlexContainer,
-  VuiFlexItem,
-  VuiIcon,
-  VuiIconButton,
-  VuiLink,
-  VuiSpacer,
-  VuiText,
-  VuiTitle
-} from "./ui";
-import { HeaderLogo } from "./components/HeaderLogo";
-import { ConfigurationDrawer } from "components/ConfigurationDrawer";
-import "./ui/_index.scss";
-import "./index.scss";
-import { RerankingConfiguration } from "@vectara/react-search/lib/types";
 
-const generateCodeSnippet = ({
-  customerId,
-  corpusId,
-  apiKey,
-  isShortcutEnabled,
-  buttonLabel,
-  placeholder,
-  isDeepLinkable = false,
-  openResultsInNewTab = false,
-  isOnToggleSummaryHandled = false,
-  isSummaryToggleVisible = false,
-  isSummaryToggleInitiallyEnabled = false,
-  rerankingConfiguration
-}: {
-  customerId?: string;
-  corpusId?: string;
-  apiKey?: string;
-  isShortcutEnabled?: boolean;
-  buttonLabel?: string;
-  placeholder?: string;
-  isDeepLinkable: boolean;
-  openResultsInNewTab: boolean;
-  isOnToggleSummaryHandled: boolean;
-  isSummaryToggleVisible: boolean;
-  isSummaryToggleInitiallyEnabled: boolean;
-  rerankingConfiguration?: RerankingConfiguration;
-}) => {
-  let quotedPlaceholder = placeholder;
+/* snip */
 
-  if (placeholder) {
-    if (placeholder.match('"')) {
-      quotedPlaceholder = `'${placeholder}'`;
-    } else {
-      quotedPlaceholder = `"${placeholder}"`;
-    }
-  }
+<ReactSearch
+  customerId="CUSTOMER_ID"
+  corpusId="CORPUS_ID"
+  apiKey="API_KEY"
+  placeholder="Search" // Optional search input placeholder
+  isDeepLinkable={true} // Optional boolean determining if search results will be deep-linked
+  openResultsInNewTab={true} // Optional boolean determining if links will open in a new tab
+  zIndex={1000} // Optional number assigned to the z-index of the search modal
+  isSummaryToggleVisible={true} // Optional boolean determining if users can summarize search results
+  rerankingConfiguration={{
+    rerankerId: 272725718
+  }}
+/>;
+```
 
-  const props = [
-    `customerId="${customerId === "" ? "<Your Vectara customer ID>" : customerId}"`,
-    `corpusId="${corpusId === "" ? "<Your Vectara corpus ID>" : corpusId}"`,
-    `apiKey="${apiKey === "" ? "<Your Vectara API key>" : apiKey}"`
-  ];
+#### <u>Configuration options</u>
 
-  // True is the default so only show it if it's false.
-  if (!isShortcutEnabled) {
-    props.push(`isShortcutEnabled={${isShortcutEnabled}}`);
-  }
+##### `customerId` (required)
 
-  if (buttonLabel) {
-    props.push(`buttonLabel="${buttonLabel}"`);
-  }
+Every Vectara account is associated with a customer ID. You can find your customer ID by logging into the [Vectara Console](https://console.vectara.com/) and opening your account dropdown in the top-right corner.
 
-  if (placeholder) {
-    props.push(`placeholder=${quotedPlaceholder}`);
-  }
+##### `corpusId` (required)
 
-  if (isDeepLinkable) {
-    props.push(`isDeepLinkable={${isDeepLinkable}}`);
-  }
+After you [create a corpus](https://docs.vectara.com/docs/console-ui/creating-a-corpus), you can find its ID by navigating to the corpus and looking in the top-left corner, next to the corpus name.
 
-  if (openResultsInNewTab) {
-    props.push(`openResultsInNewTab={${openResultsInNewTab}}`);
-  }
+##### `apiKey` (required)
 
-  if (isOnToggleSummaryHandled) {
-    props.push(`onToggleSummary={(isSummaryEnabled: boolean) => console.log(isSummaryEnabled)}`);
-  }
+API keys enable applications to access data inside of corpora. Learn how to [create a **QueryService** API key](https://docs.vectara.com/docs/console-ui/manage-api-access#create-an-api-key).
 
-  if (isSummaryToggleVisible) {
-    props.push(`isSummaryToggleVisible={${isSummaryToggleVisible}}`);
-  }
+##### `apiUrl` (optional)
 
-  if (isSummaryToggleInitiallyEnabled) {
-    props.push(`isSummaryToggleInitiallyEnabled={${isSummaryToggleInitiallyEnabled}}`);
-  }
+By default, React-Search sends query requests to the Vectara servers. If you want to use a proxy server, you can configure this option with the URL of your proxy.
 
-  if (rerankingConfiguration) {
-    props.push(`rerankingConfiguration={${JSON.stringify(rerankingConfiguration)}}`);
-  }
+##### `placeholder` (optional)
 
-  props.push(`zIndex={ /* (optional) number representing the z-index the search modal should have */ }`);
+Configure the placeholder text in the search modal's input.
 
-  return `import { ReactSearch } from "@vectara/react-search";
+##### `isDeepLinkable` (optional)
 
-export const App = () => (
-  <div>
-    <ReactSearch
-      ${props.join("\n      ")}
-    />
-  </div>
-);`;
-};
+Defaults to `false`. Set this option if you want to persist a search query to a URL parameter. This will enable users to share or bookmark the URL. Loading the URL will automatically open the search modal and search for the query that's stored in the URL.
 
-const DEFAULT_CORPUS_ID = "1";
-const DEFAULT_CUSTOMER_ID = "1366999410";
-const DEFAULT_API_KEY = "zqt_UXrBcnI2UXINZkrv4g1tQPhzj02vfdtqYJIDiA";
-const DEFAULT_PLACEHOLDER = 'Try searching for "vectara" or "RAG"';
+##### `openResultsInNewTab` (optional)
 
-const App = () => {
-  const [isConfigurationDrawerOpen, setIsConfigurationDrawerOpen] = useState(false);
-  const [corpusId, setCorpusId] = useState<string>("");
-  const [customerId, setCustomerId] = useState<string>("");
-  const [apiKey, setApiKey] = useState<string>("");
-  const [isShortcutEnabled, setIsShortcutEnabled] = useState<boolean>(true);
-  const [buttonLabel, setButtonLabel] = useState<string>("Search");
-  const [placeholder, setPlaceholder] = useState<string>(DEFAULT_PLACEHOLDER);
-  const [isDeepLinkable, setIsDeepLinkable] = useState<boolean>(false);
-  const [openResultsInNewTab, setOpenResultsInNewTab] = useState<boolean>(false);
-  const [isOnToggleSummaryHandled, setIsOnToggleSummaryHandled] = useState<boolean>(false);
-  const [isSummaryToggleVisible, setIsSummaryToggleVisible] = useState<boolean>(true);
-  const [isSummaryToggleInitiallyEnabled, setIsSummaryToggleInitiallyEnabled] = useState<boolean>(true);
-  const [rerankingConfigurationString, setRerankingConfigurationString] = useState<string | undefined>(undefined);
+Defaults to `false`. Set this option if you want a search result to open in a new tab.
 
-  let rerankingConfiguration;
+##### `zIndex` (optional)
 
-  try {
-    rerankingConfiguration = JSON.parse(rerankingConfigurationString ?? "");
-  } catch {
-    rerankingConfiguration = undefined;
-  }
+Define the z-index of the search modal.
 
-  return (
-    <>
-      <VuiAppHeader
-        left={
-          <VuiFlexContainer spacing="m" alignItems="center">
-            <VuiFlexItem grow={false} shrink={false}>
-              <HeaderLogo />
-            </VuiFlexItem>
+##### `onToggleSummary` (optional)
 
-            <VuiFlexItem grow={false} shrink={false}>
-              <VuiTitle size="xs">
-                <h1>
-                  <strong>Vectara React-Search</strong>
-                </h1>
-              </VuiTitle>
-            </VuiFlexItem>
-          </VuiFlexContainer>
-        }
-        right={
-          <VuiIconButton
-            isAnchor
-            href="https://github.com/vectara/react-search"
-            target="_blank"
-            color="neutral"
-            size="l"
-            icon={
-              <VuiIcon>
-                <BiLogoGithub />
-              </VuiIcon>
-            }
-          />
-        }
-      />
+Accepts a callback that will receive a boolean argument indicating whether the "Summarize search results" toggle is enabled.
 
-      <VuiAppLayout>
-        <VuiAppContent className="appExampleContent" padding="xl">
-          <div className="content">
-            <VuiTitle size="l">
-              <h1>Vectara React-Search</h1>
-            </VuiTitle>
+##### `isSummaryToggleVisible` (optional)
 
-            <VuiSpacer size="m" />
+Whether users will be able to summarize search results or not.
 
-            <VuiText>
-              <p>
-                React-Search adds a Vectara-powered semantic search UI to your React applications with a few lines of
-                code.
-              </p>
-            </VuiText>
+##### `isSummaryToggleInitiallyEnabled` (optional)
 
-            <VuiSpacer size="m" />
+If users can toggle summarization, whether the toggle should be enabled by default.
 
-            {/**
-             * Here we ensure that if the field is blank, we use the default props that point to the docs page.
-             * This ensures that we don't voluntarily display the docs corpus details in the text fields.
-             */}
-            <div className="reactSearchContainer">
-              <ReactSearch
-                corpusId={corpusId === "" ? DEFAULT_CORPUS_ID : corpusId}
-                customerId={customerId === "" ? DEFAULT_CUSTOMER_ID : customerId}
-                apiKey={apiKey === "" ? DEFAULT_API_KEY : apiKey}
-                isShortcutEnabled={isShortcutEnabled}
-                buttonLabel={buttonLabel}
-                placeholder={placeholder}
-                isDeepLinkable={isDeepLinkable}
-                openResultsInNewTab={openResultsInNewTab}
-                isSummaryToggleVisible={isSummaryToggleVisible}
-                isSummaryToggleInitiallyEnabled={isSummaryToggleInitiallyEnabled}
-                onToggleSummary={(isSummaryEnabled: boolean) =>
-                  console.log(`onToggleSummary callback received isSummaryEnabled: ${isSummaryEnabled}`)
-                }
-                rerankingConfiguration={rerankingConfiguration}
-              />
-            </div>
+##### `rerankingConfiguration` (optional)
 
-            <VuiSpacer size="m" />
+Specifies a search result reranker to use, along with its configuration.
+For more information, see our [docs on reranking](https://docs.vectara.com/docs/api-reference/search-apis/reranking).
 
-            <VuiButtonSecondary color="primary" onClick={() => setIsConfigurationDrawerOpen(true)}>
-              Edit configuration
-            </VuiButtonSecondary>
+### Power your own search UI with the useSearch hook
 
-            <VuiSpacer size="xxl" />
+Install React-Search:
 
-            <VuiTitle size="m">
-              <h2>Use it in your code</h2>
-            </VuiTitle>
+```shell
+npm install --save @vectara/react-search
+```
 
-            <VuiSpacer size="m" />
+Then use the `useSearch` hook in your application like this:
 
-            <VuiText>
-              <p>
-                For help,{" "}
-                <VuiLink isAnchor href="https://github.com/vectara/react-search">
-                  read the docs.
-                </VuiLink>
-              </p>
-            </VuiText>
-
-            <VuiSpacer size="m" />
-
-            <VuiCode>npm install @vectara/react-search</VuiCode>
-
-            <VuiSpacer size="s" />
-
-            <VuiCode language="tsx">
-              {generateCodeSnippet({
-                customerId,
-                corpusId,
-                apiKey,
-                isShortcutEnabled,
-                buttonLabel,
-                placeholder,
-                isDeepLinkable,
-                openResultsInNewTab,
-                isOnToggleSummaryHandled,
-                isSummaryToggleVisible,
-                isSummaryToggleInitiallyEnabled,
-                rerankingConfiguration
-              })}
-            </VuiCode>
-
-            <VuiSpacer size="xxl" />
-
-            <VuiTitle size="m">
-              <h2>Create your own view</h2>
-            </VuiTitle>
-
-            <VuiSpacer size="m" />
-
-            <VuiText>
-              <p>
-                React-Search also exposes a useSearch hook that sends and receives data to/from the search API. This is
-                perfect for creating your own components that are powered by Vectara's search functionality.
-              </p>
-              <p>Check out the example below.</p>
-            </VuiText>
-
-            <VuiSpacer size="s" />
-
-            <VuiCode language="tsx">
-              {`
+```js
 import { useSearch } from "@vectara/react-search/lib/useSearch";
 
-export const App = () => {
-  const { fetchSearchResults, isLoading } = useSearch(
-    "CUSTOMER_ID",
-    "CORPUS_ID",
-    "API_KEY"
-  );
+/* snip */
 
-  /* You can pass the values returned by the hook to your custom components as props, or use them
-  however you wish. */
-};
-`}
-            </VuiCode>
+const { fetchSearchResults, isLoading } = useSearch(
+  "CUSTOMER_ID",
+  "CORPUS_ID",
+  "API_KEY",
+  "API_URL", // optional
+  { rerankerId: 12345 } // optional
+);
+```
 
-            <VuiSpacer size="m" />
+The values returned by the hook can be passed on to your custom components as props or used in any way you wish.
 
-            <VuiText>
-              <p></p>
-              <p>The hook returns:</p>
-              <ul>
-                <li>fetchSearchResults - a function that sends a search string to the search endpoint</li>
-                <li>isLoading - a boolean value indicating whether or not a search request is pending</li>
-              </ul>
-            </VuiText>
+#### <u>Hook Values</u>
 
-            <VuiSpacer size="m" />
+##### fetchSearchResults: `async (query: string, summarize: boolean) => Promise<{ searchResults: DeserializedSearchResult[]; summary?: string }>`
 
-            <VuiText>
-              For more details, including return value types,{" "}
-              <VuiLink isAnchor href="https://github.com/vectara/react-search">
-                read the docs.
-              </VuiLink>
-            </VuiText>
+This is used to send a message to the search API. When the search succeeds, an object consisting of an array of search results and an optional summary is returned. Each search result is a `DeserializedSearchResult` object. More information on types can be found [here](src/types.ts).
 
-            <ConfigurationDrawer
-              isOpen={isConfigurationDrawerOpen}
-              setIsOpen={setIsConfigurationDrawerOpen}
-              corpusId={corpusId}
-              setCorpusId={setCorpusId}
-              customerId={customerId}
-              setCustomerId={setCustomerId}
-              apiKey={apiKey}
-              setApiKey={setApiKey}
-              isShortcutEnabled={isShortcutEnabled}
-              setIsShortcutEnabled={setIsShortcutEnabled}
-              buttonLabel={buttonLabel}
-              setButtonLabel={setButtonLabel}
-              placeholder={placeholder}
-              setPlaceholder={setPlaceholder}
-              isDeepLinkable={isDeepLinkable}
-              setIsDeepLinkable={setIsDeepLinkable}
-              openResultsInNewTab={openResultsInNewTab}
-              setOpenResultsInNewTab={setOpenResultsInNewTab}
-              isOnToggleSummaryHandled={isOnToggleSummaryHandled}
-              setIsOnToggleSummaryHandled={setIsOnToggleSummaryHandled}
-              isSummaryToggleVisible={isSummaryToggleVisible}
-              setIsSummaryToggleVisible={setIsSummaryToggleVisible}
-              isSummaryToggleInitiallyEnabled={isSummaryToggleInitiallyEnabled}
-              setIsSummaryToggleInitiallyEnabled={setIsSummaryToggleInitiallyEnabled}
-              rerankingConfigurationString={rerankingConfigurationString}
-              setRerankingConfigurationString={setRerankingConfigurationString}
-            />
-          </div>
-        </VuiAppContent>
-      </VuiAppLayout>
-    </>
-  );
-};
+##### isLoading: `boolean`
 
-ReactDOM.render(<App />, document.getElementById("root"));
+A boolean value indicating whether or not a search request is still pending
+
+### Usage with SSR Frameworks
+
+Using React-Search with SSR frameworks may require additional infrastructure. Here are some common gotchas:
+
+#### Next.js
+
+React-Search offers a `ReactSearchNext` variant that is compatible with Next.js. It accepts the same props that `ReactSearch` does.
+
+It can be imported as:
+
+```js
+import { ReactSearchNext } from "@vectara/react-search/lib/ReactSearchNext";
+```
+
+**In addition to using this Next.js-compatible component, you will also need to use the `"use client"` directive in the file that imports `ReactSearchNext`.**
+
+### Set up your search data
+
+React-Search pulls data from your Vectara corpus. To set this up:
+
+1. [Create a free Vectara account](https://console.vectara.com/signup).
+2. [Create a corpus and add data to it](https://docs.vectara.com/docs/console-ui/creating-a-corpus).
+3. [Create a **QueryService** API key](https://docs.vectara.com/docs/console-ui/manage-api-access#create-an-api-key).
+
+**Pro-tip:** After you create an API key, navigate to your corpus and click on the "Access control" tab. Find your API key on the bottom and select the "Copy all" option to copy your customer ID, corpus ID, and API key. This gives you all the data you need to configure your `<ReactSearch />` instance.
+
+![Copy all option](https://raw.githubusercontent.com/vectara/react-search/main/images/copyAll.jpg)
+
+#### How to use metadata
+
+Vectara enables you to define [metadata](https://docs.vectara.com/docs/learn/document-data-structuring#metadata) on your documents. React-Search behaves differently based on the presence of specific metadata fields:
+
+- `title`: If this field is defined it will be rendered as the title of a search result. Typically this is something like the title of the document or webpage.
+- `url`: If this field is defined, React-Search will render the search result as a link to the defined URL.
+
+## Maintenance
+
+This codebase comes with a development environment to facilitate enhancements and bug fixes. It allows maintainers to quickly iterate on the code and verify changes instantly.
+
+### Running the development environment
+
+From the root directory, run:
+
+```
+npm install
+```
+
+This will install all dependencies necessary for building the component and running the dev environment. Once this completes, run:
+
+```
+npm run docs
+```
+
+This spins up an application running at `http://localhost:8080/`. Your latest changes will be reflected here.
+
+### Making changes to the component
+
+Once the development environment is running, any changes made to .ts and .tsx files in the `/src` directory will trigger a rebuild of the component and a reload of the webpage.
+
+Additionally, any changes to the development app source code at `/docs/index.tsx` will also trigger a rebuild + reload.
+
+## License
+
+Vectara React-Search is an open-sourced software licensed under the [Apache 2.0 license](/LICENSE).
+
+_This repository contains sample code that can help you build UIs powered by Vectara, and is licensed under the Apache 2.0 License. Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License._
